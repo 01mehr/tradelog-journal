@@ -14,7 +14,7 @@
 1. Create the public source repository and push only the allowlisted project files. Do not add `local-data/`, `.codex/`, `bridge/`, `server.mjs`, the account-history CSV files, `freellmapi/`, or `google-sheets/`.
 2. Optionally add GitHub Actions variables named `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to override the public defaults in `cloud-config.js`.
 3. Enable GitHub Pages using **GitHub Actions**. The existing workflow publishes the static bundle from `dist/`.
-4. In Supabase Authentication → URL Configuration, add the hosted Pages URL to the allowed redirect URLs. Also add `http://127.0.0.1:4188/` if testing sign-in from the local app.
+4. In Supabase Authentication → URL Configuration, add `https://01mehr.github.io/tradelog-journal/` to the allowed redirect URLs. Also add `http://127.0.0.1:4188/` if testing sign-in from the local app.
 5. Enable Email sign-in. For Google, configure Google OAuth credentials in Supabase Authentication → Sign In / Providers → Google, then add the Supabase callback URL shown there to the Google OAuth client.
 6. Open the hosted HTTPS app, sign in, then choose whether to upload that browser's existing journal or load an existing cloud copy. No local data is uploaded before that choice.
 
@@ -35,3 +35,4 @@ Keep share links private. Anyone holding one can view the complete snapshot unti
 ## Local / MT5 behavior
 
 The local app at `http://127.0.0.1:4188/` continues to use its existing local storage and MetaTrader bridge. Its trade records are a separate origin from the hosted website. Cloud sync will not reach into local storage and upload trades automatically; use the in-app upload choice or CSV workflow when you decide to move data. The hosted HTTPS app cannot connect to a bridge bound only to `127.0.0.1` on your PC.
+

@@ -17,6 +17,7 @@
   let lastCreatedLink = '';
   let linkNotice = '';
   let panelRefreshTimer = 0;
+  let googleEnabled = null;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch]));
   const configured = () => /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(config.url || '') && /^sb_publishable_[A-Za-z0-9_-]+$/.test(config.publishableKey || '') || /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(config.url || '') && /^[A-Za-z0-9._-]{30,}$/.test(config.publishableKey || '');
@@ -36,6 +37,17 @@
     }, 80);
   };
   const publishableKey = () => config.publishableKey || config.anonKey || '';
+  const loadAuthProviders = async () => {
+    try {
+      const response = await fetch(`${config.url}/auth/v1/settings`, { headers: { apikey: publishableKey() } });
+      if (!response.ok) throw new Error('Provider settings are unavailable.');
+      const settings = await response.json();
+      googleEnabled = settings?.external?.google === true;
+    } catch {
+      googleEnabled = false;
+    }
+    refreshSettingsSoon();
+  };
   const hashToken = async token => {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
     return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, '0')).join('');
@@ -71,7 +83,10 @@
   const settingsMarkup = () => {
     const ready = configured() && Boolean(window.supabase?.createClient);
     const shareRows = ready && user && isLinked() ? `<div class="cloud-share-area"><div class="cloud-share-heading"><div><b>Read-only journal link</b><p>Let someone view your journal without giving them edit access.</p></div></div><form data-cloud-share-form class="cloud-share-form"><label>Link name<input name="label" maxlength="60" value="Journal viewer" required></label><label>Expires<select name="expiry"><option value="7">In 7 days</option><option value="30" selected>In 30 days</option><option value="90">In 90 days</option><option value="never">Never</option></select></label><button class="button" type="submit">Create view-only link</button></form><p class="cloud-share-warning">Anyone with the link can view all trades, account details, notes, and profile information in this journal. The link cannot edit your data. Revoke it any time.</p>${lastCreatedLink ? `<div class="cloud-created-link"><label>Copy this link now<input readonly data-created-link value="${esc(lastCreatedLink)}"></label><button class="small-btn" type="button" data-cloud-copy-link>Copy</button></div>` : ''}${linkNotice ? `<p class="cloud-inline-notice" role="status">${esc(linkNotice)}</p>` : ''}<div data-cloud-share-list class="cloud-share-list"><button class="small-btn" type="button" data-cloud-list-shares>Show active links</button></div></div>` : '';
-    const signedMarkup = user ? `<div class="cloud-signed-in"><span class="cloud-avatar">${esc((user.email || 'T').slice(0,1).toUpperCase())}</span><div><b>${esc(user.email || 'Signed in')}</b><small>Private cloud account</small></div><button class="small-btn" type="button" data-cloud-sign-out>Sign out</button></div><p class="cloud-status" data-cloud-status data-tone="info">${esc(signInStatus())}</p>${pendingRemote ? `<div class="cloud-choice-row"><button class="button" type="button" data-cloud-use-remote>Use cloud copy here</button>${hasLocalData()?'<button class="button" type="button" data-cloud-upload>Replace cloud with this device</button>':''}</div>` : !isLinked() && hasLocalData() ? `<div class="cloud-choice-row"><button class="primary-button" type="button" data-cloud-upload>Upload this device to cloud</button>${pendingRemote?'<button class="button" type="button" data-cloud-use-remote>Use cloud copy here</button>':''}</div>` : `<div class="cloud-action-row"><button class="button" type="button" data-cloud-sync-now>Sync now</button></div>`}${shareRows}` : `<p class="cloud-status" data-cloud-status data-tone="info">${esc(status)}</p><div class="cloud-signin-grid"><button class="button cloud-google-button" type="button" data-cloud-google>Continue with Google</button><form data-cloud-email-form class="cloud-email-form"><label>Email for a sign-in link<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label><button class="primary-button" type="submit">Email me a sign-in link</button></form></div><p class="cloud-footnote">Your journal stays private to your account. This browser will not upload its existing trades until you choose Upload.</p>`;
+    const googleMarkup = googleEnabled === true
+      ? '<button class="button cloud-google-button" type="button" data-cloud-google>Continue with Google</button>'
+      : `<p class="cloud-setup-note">${googleEnabled === false ? 'Google sign-in is not enabled for this cloud project yet.' : 'Checking available sign-in methods…'} Email sign-in is available below.</p>`;
+    const signedMarkup = user ? `<div class="cloud-signed-in"><span class="cloud-avatar">${esc((user.email || 'T').slice(0,1).toUpperCase())}</span><div><b>${esc(user.email || 'Signed in')}</b><small>Private cloud account</small></div><button class="small-btn" type="button" data-cloud-sign-out>Sign out</button></div><p class="cloud-status" data-cloud-status data-tone="info">${esc(signInStatus())}</p>${pendingRemote ? `<div class="cloud-choice-row"><button class="button" type="button" data-cloud-use-remote>Use cloud copy here</button>${hasLocalData()?'<button class="button" type="button" data-cloud-upload>Replace cloud with this device</button>':''}</div>` : !isLinked() && hasLocalData() ? `<div class="cloud-choice-row"><button class="primary-button" type="button" data-cloud-upload>Upload this device to cloud</button>${pendingRemote?'<button class="button" type="button" data-cloud-use-remote>Use cloud copy here</button>':''}</div>` : `<div class="cloud-action-row"><button class="button" type="button" data-cloud-sync-now>Sync now</button></div>`}${shareRows}` : `<p class="cloud-status" data-cloud-status data-tone="info">${esc(status)}</p><div class="cloud-signin-grid">${googleMarkup}<form data-cloud-email-form class="cloud-email-form"><label>Email for a sign-in link<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label><button class="primary-button" type="submit">Email me a sign-in link</button></form></div><p class="cloud-footnote">Your journal stays private to your account. This browser will not upload its existing trades until you choose Upload.</p>`;
     const configNote = !configured() ? '<p class="cloud-setup-note">Cloud sync will appear here after the hosted build is connected to the TradeLog cloud project.</p>' : !window.supabase?.createClient ? '<p class="cloud-setup-note">The secure sync library did not load. Check your internet connection and reload.</p>' : '';
     return `<section class="card cloud-settings" id="cloud-settings"><div class="card-heading"><div><h3>Cloud sync and sharing</h3><small>Keep one private journal updated across your devices.</small></div><span class="cloud-lock-mark" aria-hidden="true">${client ? 'SYNC' : 'PRIVATE'}</span></div>${configNote}${client ? signedMarkup : ''}</section>`;
   };
@@ -226,6 +241,7 @@
     if (!configured()) return;
     if (!window.supabase?.createClient) { status = 'Secure cloud library is unavailable. Check your internet connection.'; return; }
     client = window.supabase.createClient(config.url, publishableKey(), { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    void loadAuthProviders();
     const { data: sessionData } = await client.auth.getSession();
     user = sessionData?.session?.user || null;
     if (user) await bootstrapUser();
@@ -285,3 +301,4 @@
 
   window.TradeLogCloud = { settingsMarkup, start: begin, scheduleSync, isReadOnly: () => readOnly, hasAccount: () => Boolean(user) };
 })();
+
