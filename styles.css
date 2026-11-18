@@ -389,7 +389,8 @@ body.liquid .connected-account-row{background:rgba(14,24,37,.72);border-color:rg
 @media(max-width:760px){.connection-page-head{align-items:stretch;gap:14px}.connection-scope{width:100%}.connected-account-row{grid-template-columns:10px minmax(0,1fr) auto;gap:10px}.connected-account-balance{grid-column:2;text-align:left}.connected-account-row .small-btn{grid-column:3;grid-row:1 / span 2}}
 @media(max-width:520px){.connect-account-form{grid-template-columns:repeat(2,minmax(0,1fr))}.connect-account-form .primary-button{grid-column:1/-1}}
 /* A restrained cursor reflection follows the pointer with the Canvas UI Glass easing model. */
-.view .card::after{background:radial-gradient(280px circle at var(--pointer-x,50%) var(--pointer-y,40%),rgba(73,145,255,.12),rgba(73,145,255,0) 72%);transition:opacity .22s ease}
+.view .card::after{z-index:0;background:radial-gradient(280px circle at var(--pointer-x,50%) var(--pointer-y,40%),rgba(73,145,255,.12),rgba(73,145,255,0) 72%);mix-blend-mode:soft-light;transition:opacity .22s ease}
+.view .card>*{position:relative;z-index:1}
 .view .card.pointer-active{transform:translateY(-1px);border-color:rgba(176,194,218,.38);box-shadow:0 12px 28px rgba(0,0,0,.16)}
 .view .card:hover::after{opacity:1}
 body.light .view .card::after{background:radial-gradient(280px circle at var(--pointer-x,50%) var(--pointer-y,40%),rgba(8,104,245,.13),rgba(8,104,245,0) 72%)}
@@ -398,6 +399,14 @@ body.glass-blue-grey .view .card::after{background:radial-gradient(280px circle 
 .install-button:not([hidden]){color:var(--blue);border-color:var(--line)}
 .install-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
 @media(prefers-reduced-motion:reduce){.view .card,.view .card::after{transition:none!important}.view .card.pointer-active{transform:none}}
+
+/* Inertial spotlight from the Stitch terminal reference. The blend keeps text readable. */
+.cursor-spotlight{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;mix-blend-mode:soft-light;background:radial-gradient(520px circle at var(--spotlight-x,-1000px) var(--spotlight-y,-1000px),rgba(54,127,235,.2),rgba(54,127,235,.07) 34%,transparent 72%);transition:opacity .24s ease}
+.cursor-spotlight.is-visible{opacity:.72}
+body.light .cursor-spotlight{background:radial-gradient(520px circle at var(--spotlight-x,-1000px) var(--spotlight-y,-1000px),rgba(8,104,245,.18),rgba(8,104,245,.055) 34%,transparent 72%)}
+body.glass-blue-grey .cursor-spotlight{background:radial-gradient(520px circle at var(--spotlight-x,-1000px) var(--spotlight-y,-1000px),rgba(211,226,246,.24),rgba(182,202,230,.075) 34%,transparent 72%)}
+@media(max-width:760px),(hover:none){.cursor-spotlight{display:none}}
+@media(prefers-reduced-motion:reduce){.cursor-spotlight{display:none!important;transition:none!important}}
 
 /* High-clarity Light theme: white panels, cool ink, and restrained elevation. */
 body.light{--bg:#f4f6f9;--panel:#fff;--panel2:#f7f8fa;--line:#e2e6ed;--text:#151b26;--muted:#5d6878;--blue:#0868f5;--blue2:#0868f5;--green:#07805a;--red:#d93d55;--amber:#a96a00;--shadow:0 2px 8px rgba(24,39,60,.055);color-scheme:light}
