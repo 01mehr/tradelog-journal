@@ -1,6 +1,6 @@
-const CACHE = 'tradelog-shell-v56';
+const CACHE = 'tradelog-shell-v57';
 const base = new URL('./', self.location.href);
-const shell = ['.', 'index.html', 'styles.css?v=42', 'liquid-glass.css?v=2', 'cloud-config.js', 'cloud-client.js?v=2', 'app.js?v=53', 'tools.js?v=25', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'chess-logo.png'].map(path => new URL(path, base).href);
+const shell = ['.', 'index.html', 'styles.css?v=43', 'liquid-glass.css?v=2', 'cloud-config.js', 'cloud-client.js?v=2', 'app.js?v=54', 'tools.js?v=26', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'chess-logo.png'].map(path => new URL(path, base).href);
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(shell)).then(() => self.skipWaiting()));
 });

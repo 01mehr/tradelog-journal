@@ -627,3 +627,5 @@ body.glass-blue-grey .weekday-income-grid>div{background:#17191b;border-color:#2
 @media(max-width:520px){.weekday-income-title{align-items:flex-start;flex-direction:column;gap:4px}.weekday-income-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.timezone-setting-row{align-items:flex-start;flex-direction:column}.timezone-setting-row select{width:100%;min-width:0}}
 .privacy-note>span{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:var(--green)}
 @media(max-width:720px){.privacy-note>span{width:8px;height:8px;flex-basis:8px}}
+.market-unified-cursor{position:absolute;z-index:5;top:18px;bottom:12px;left:0;width:2px;border:0!important;border-radius:2px;background:#0874ff;box-shadow:0 0 0 1px rgba(8,116,255,.12);pointer-events:none}
+.light .market-unified-cursor{background:#0868dc}
