@@ -1,6 +1,7 @@
-// Public client configuration only. Never place a Supabase service-role key here.
-// The GitHub Pages build replaces these values from repository Actions variables.
-window.TRADELOG_CLOUD_CONFIG = window.TRADELOG_CLOUD_CONFIG || {
-  url: '',
-  publishableKey: ''
-};
+// Public browser configuration only. This publishable key is designed to be
+// exposed in client apps; access is constrained by Supabase RLS policies.
+// Never put a Supabase secret/service-role key in this file.
+window.TRADELOG_CLOUD_CONFIG = Object.freeze({
+  url: 'https://wqgssadlinqqfqryrwgt.supabase.co',
+  publishableKey: 'sb_publishable_TEns3ZJZ2hzDrmcPE3zZww_9g_5xxMi'
+});

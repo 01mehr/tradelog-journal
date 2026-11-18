@@ -13,8 +13,9 @@ for (const file of publicFiles) {
   fs.copyFileSync(source, path.join(out, file));
 }
 const cloudConfig = {
-  url: process.env.SUPABASE_URL || '',
-  publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || ''
+  // Public client identifiers only; row-level security protects user data.
+  url: process.env.SUPABASE_URL || 'https://wqgssadlinqqfqryrwgt.supabase.co',
+  publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_TEns3ZJZ2hzDrmcPE3zZww_9g_5xxMi'
 };
 fs.writeFileSync(path.join(out, 'cloud-config.js'), `window.TRADELOG_CLOUD_CONFIG = Object.freeze(${JSON.stringify(cloudConfig)});\n`);
 console.log(`Built static TradeLog web app in ${out}`);

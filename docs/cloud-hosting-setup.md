@@ -6,13 +6,13 @@
 - Supabase project: `tradelog-cloud`, South Asia (Mumbai), ref `wqgssadlinqqfqryrwgt`.
 - The per-user journal table and read-only share RPC are installed.
 - No trades, account records, profile details, or photos have been copied from the local browser into Supabase.
-- The static GitHub Pages build reads `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` from repository Actions variables and writes them to `dist/cloud-config.js`.
+- The static GitHub Pages build writes the public browser configuration from `cloud-config.js` to `dist/cloud-config.js`. Repository Actions variables may override those values.
 - The public publishable key is intended for the browser. Never use a Supabase secret or service-role key in the browser, the repository, or GitHub Pages.
 
 ## Finish hosting configuration
 
 1. Create the public source repository and push only the allowlisted project files. Do not add `local-data/`, `.codex/`, `bridge/`, `server.mjs`, the account-history CSV files, `freellmapi/`, or `google-sheets/`.
-2. Add GitHub Actions variables named `SUPABASE_URL` (`https://wqgssadlinqqfqryrwgt.supabase.co`) and `SUPABASE_PUBLISHABLE_KEY` (from Supabase Project Settings → API Keys).
+2. Optionally add GitHub Actions variables named `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to override the public defaults in `cloud-config.js`.
 3. Enable GitHub Pages using **GitHub Actions**. The existing workflow publishes the static bundle from `dist/`.
 4. In Supabase Authentication → URL Configuration, add the hosted Pages URL to the allowed redirect URLs. Also add `http://127.0.0.1:4188/` if testing sign-in from the local app.
 5. Enable Email sign-in. For Google, configure Google OAuth credentials in Supabase Authentication → Sign In / Providers → Google, then add the Supabase callback URL shown there to the Google OAuth client.
