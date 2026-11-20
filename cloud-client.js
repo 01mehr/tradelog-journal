@@ -4,6 +4,7 @@
   const config = window.TRADELOG_CLOUD_CONFIG || {};
   const linkedKey = 'tradelog:cloud-linked-user:v1';
   const stateTable = 'tradelog_user_state';
+  const publicAppUrl = 'https://01mehr.github.io/tradelog-journal/';
   let client = null;
   let user = null;
   let app = null;
@@ -217,9 +218,7 @@
       const expiresAt = expiry === 'never' ? null : new Date(Date.now() + Number(expiry) * 86400000).toISOString();
       const { error } = await client.from('tradelog_shares').insert({ token_hash: tokenHash, owner_id: user.id, label: form.elements.label.value.trim() || 'Journal viewer', expires_at: expiresAt });
       if (error) throw error;
-      const link = new URL(location.href);
-      link.search = '';
-      link.hash = '';
+      const link = new URL(publicAppUrl);
       link.searchParams.set('share', token);
       lastCreatedLink = link.toString();
       linkNotice = 'Link created. Copy it now; the secret part is shown only once.';
